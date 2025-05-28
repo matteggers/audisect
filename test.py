@@ -60,7 +60,7 @@ def transcribe(allFiles, outputDirectory): # Nothing returned
             print(f"TRANSCRIBING : {file}")
             result = model.transcribe(file, fp16 = False) # false bc mac
     
-            _, tail = os.path.split(file)
+            head, tail = os.path.split(file)
             tail = tail.split(".")
             tailBase = tail[0]
 
@@ -71,14 +71,11 @@ def transcribe(allFiles, outputDirectory): # Nothing returned
 
 
 outputFolder = "outputFolder"
-audio_directory = "/Users/mattheweggers/repos/audisect/audioFiles" # FIXME Replace with INSERT AUDIO FOLDER HERE
+audio_directory = "INSERT FOLDER PATH HERE"
+allFiles = find_audio_files(audio_directory)
+outputDirectory = os.path.join(os.getcwd(), outputFolder)
+outputDirectory = os.path.abspath(outputDirectory)
 
-
-
-def run_transcription(audio_directory, outputFolder):
-    outputDirectory = os.path.join(os.getcwd(), outputFolder)
-    outputDirectory = os.path.abspath(outputDirectory)
-    create_output_directory(outputFolder)
-    allFiles = find_audio_files(audio_directory)
-    transcribe(allFiles, outputDirectory)
-
+create_output_directory(outputFolder)
+allFiles = find_audio_files(audio_directory)
+transcribe(allFiles, outputDirectory)
