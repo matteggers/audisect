@@ -5,46 +5,31 @@
 # the indicating keyword, and the fourth being the actual sentence.
 # need a list of keywords for each emotion and run through another model/recognition script
 
+
 import os
 import whisper
-
-
-# Code Snippet:
-# Locate folder that has audio files
-# Enter folder that has audio files
-# Create folders for the output
-# Open them into whisper
-# Transcribe them into whisper
-# Place the output into a subfolder within the output folder titled for each video
-# Why nested like this? Keeps files segmented for individual analysis if desired.
-
+from glob import glob # may refactor w this, idk yet.
 # Make a note to user that if on mac, pasting "" into notes auto corrects to em dash. Need a different text editor
-# yt-dlp -f bestaudio -x --audio-format wav "https://www.youtube.com/watch?v=EdgjJNAphUo"
+# yt-dlp -f bestaudio -x --audio-format wav "URL"
 
 
-# had to fix macOs ssl certificate trust bc python 13.3 /Applications/Python\ 3.13/Install\ Certificates.command
+# had to fix macOS ssl certificate trust bc python 13.3 /Applications/Python\ 3.13/Install\ Certificates.command
 
 model = whisper.load_model("tiny") # add user changeable CLI
 
-
-# OUTPUT FOLDER
-outputFolder = "outputFolder"
-
-# TODO Make this a function with more robust error handling
-try:
-    os.mkdir(outputFolder)
-    print(f"Folder '{outputFolder} created successfully")
-except FileExistsError:
-    print(f"Folder '{outputFolder} already exists")
-except OSError as e:
-    print(f"Error creating folder: {e}")
-
-outputDirectory = os.path.join(os.getcwd(), outputFolder)
-outputDirectory = os.path.abspath(outputDirectory)
+def create_output_directory(outputFolder): 
+    try:
+        os.mkdir(outputFolder)
+        print(f"Folder '{outputFolder} created successfully")
+    except FileExistsError:
+        print(f"Folder '{outputFolder} already exists")
+    except OSError as e:
+        print(f"Error creating folder: {e}")
+    
+    return os.path.dirname(outputFolder)
 
 
-audio_directory = ""
-
+# Locates audio files and adds their absolute path to a list
 def find_audio_files(directory, extensions={".wav",".mp3",".m4a",".mp4"}):
     filePaths = []
     for (root, dirs, files) in os.walk(directory, topdown=True):
@@ -54,21 +39,43 @@ def find_audio_files(directory, extensions={".wav",".mp3",".m4a",".mp4"}):
                 filePaths.append(fullPath)
     return filePaths
         
+        
+# Checks whether a text file exists in the output directory.
+def does_file_exist(file, outputDirectory):
+    fullFilePath = os.path.join(outputDirectory, file)
+    if os.path.exists(fullFilePath):
+        return True
+    else:
+        return False
     
+
+# Transcribes untranscribed files
+def transcribe(allFiles, outputDirectory): # Nothing returned  
+    for file in allFiles:
+        fileExists = does_file_exist(file, outputDirectory)
+        
+        if fileExists is True:
+            print(f"{os.path.basename(file)} has already been transcribed")
+        else:
+            print(f"TRANSCRIBING : {file}")
+            result = model.transcribe(file, fp16 = False) # false bc mac
+    
+            head, tail = os.path.split(file)
+            tail = tail.split(".")
+            tailBase = tail[0]
+
+            outputFileName = tailBase + ".txt"
+            outputFile = os.path.join(outputDirectory, outputFileName)
+            with open(outputFile, "w") as f:
+                f.write(result["text"])
+
+
+outputFolder = "outputFolder"
+audio_directory = "INSERT FOLDER PATH HERE"
 allFiles = find_audio_files(audio_directory)
+outputDirectory = os.path.join(os.getcwd(), outputFolder)
+outputDirectory = os.path.abspath(outputDirectory)
 
-
-for file in allFiles:
-    print(f"TRANSCRIBING : {file}")
-    result = model.transcribe(file, fp16 = False) # false bc mac
-    
-    head, tail = os.path.split(file)
-    tail = tail.split(".")
-    tailBase = tail[0]
-
-    outputFileName = tailBase + ".txt"
-    outputFile = os.path.join(head, outputFileName)
-    
-    with open(outputFile, "w") as f:
-        f.write(result["text"])
-
+create_output_directory(outputFolder)
+allFiles = find_audio_files(audio_directory)
+transcribe(allFiles, outputDirectory)
