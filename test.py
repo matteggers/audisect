@@ -29,8 +29,9 @@ def create_output_directory(outputFolder):
     return os.path.dirname(outputFolder)
 
 
-# Locates audio files and adds their absolute path to a list
-def find_audio_files(directory, extensions={".wav",".mp3",".m4a",".mp4"}):
+extensions = {".wav",".mp3",".m4a",".mp4"}
+# Locates audio files and adds their absolute path to a list - FIXME roughly redundant with does_file_exist. possible future change
+def find_files(directory, extensions):
     filePaths = []
     for (root, dirs, files) in os.walk(directory, topdown=True):
         for name in files:
@@ -48,6 +49,18 @@ def does_file_exist(file, outputDirectory):
     else:
         return False
     
+def file_splitter(file):
+    _, tail = os.path.split(file)
+    tail = tail.split('.')
+    tailBase = tail[0]
+    return tailBase
+
+# takes fileName (w extension) and writes the content of the transcription to it
+def write_to_file(outputDirectory, outputFileName, modelResult):
+    outputFile = os.path.join(outputDirectory, outputFileName)
+    
+    with open(outputFile, "w") as f:
+        f.write(modelResult["text"])
 
 # Transcribes untranscribed files
 def transcribe(allFiles, outputDirectory): # Nothing returned  
@@ -60,22 +73,16 @@ def transcribe(allFiles, outputDirectory): # Nothing returned
             print(f"TRANSCRIBING : {file}")
             result = model.transcribe(file, fp16 = False) # false bc mac
     
-            head, tail = os.path.split(file)
-            tail = tail.split(".")
-            tailBase = tail[0]
+            name = file_splitter(file)
 
-            outputFileName = tailBase + ".txt"
-            outputFile = os.path.join(outputDirectory, outputFileName)
-            with open(outputFile, "w") as f:
-                f.write(result["text"])
+            outputFileName = name + ".txt" # Eventually will want timestamped transcriptions, FIXME
+            
+            write_to_file(outputDirectory, outputFileName, result)
 
 
-outputFolder = "outputFolder"
-audio_directory = "INSERT FOLDER PATH HERE"
-allFiles = find_audio_files(audio_directory)
-outputDirectory = os.path.join(os.getcwd(), outputFolder)
-outputDirectory = os.path.abspath(outputDirectory)
-
-create_output_directory(outputFolder)
-allFiles = find_audio_files(audio_directory)
-transcribe(allFiles, outputDirectory)
+def run_transcription(audio_directory, outputFolder):
+    outputDirectory = os.path.join(os.getcwd(), outputFolder)
+    outputDirectory = os.path.abspath(outputDirectory)
+    create_output_directory(outputFolder)
+    allFiles = find_files(audio_directory)
+    transcribe(allFiles, outputDirectory)
