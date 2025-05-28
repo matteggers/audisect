@@ -7,7 +7,7 @@ from test import run_transcription #dont forget to change this name lol
 # Run VADER and ML analysis
 # Add to pandas dataframe
 outputFolder = "outputFolder"
-audio_directory = "INSERT AUDIO FOLDER HERE" # FIXME Replace with INSERT AUDIO FOLDER HERE
+audio_directory = "" # FIXME Replace with INSERT AUDIO FOLDER HERE
 
 
 def main():
@@ -17,3 +17,8 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+
+# Considerations
+# Put everything in one dataframe? - Yeah, DS will split it on their own 
+# One dataframe per text file. Give the option to run it with one
