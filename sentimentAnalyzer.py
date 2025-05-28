@@ -27,14 +27,13 @@ def read_text(fileDirectory):
         data = file.read()
         return data
 
-def hold_text(textList):
+def hold_text(text):
     text_dict = {}
-    for text in textList:
-        allText = read_text(text)
-        fileName = os.path.split(text)
-        fileName = fileName[1]
-        sentences = PunktSentenceTokenizer().tokenize(allText)
-        text_dict.update({fileName: sentences})
+    allText = read_text(text)
+    fileName = os.path.split(text)
+    fileName = fileName[1]
+    sentences = PunktSentenceTokenizer().tokenize(allText)
+    text_dict.update({fileName: sentences})
     return text_dict, fileName
 
 def make_dataframe(_, value):
@@ -84,7 +83,7 @@ def sentiment_analysis(df):
 
 def analyzer_wrapper(textFiles):
     for file in textFiles:
-        text_dict, fileName = hold_text(textFiles) 
+        text_dict, fileName = hold_text(file) 
         name, _ = os.path.splitext(fileName)
         outputFile = os.path.join(dataDir, name)
         df = make_dataframe(text_dict.keys(), text_dict.values())
