@@ -6,9 +6,8 @@ import nltk
 from nltk.tokenize import PunktSentenceTokenizer
 import pandas as pd
 import os
-from main import outputFolder
-from test import create_output_directory
-from test import find_files
+from transcriber import create_output_directory
+from transcriber import find_files
 
 # refactor at some point using np to reduce time to run this
 
@@ -47,6 +46,11 @@ def make_dataframe(_, value):
     return df
 
 def sentiment_analysis(df):
+    MODEL = "cardiffnlp/twitter-roberta-base-sentiment" #removed the f string - may come in handy for others
+    tokenizer = AutoTokenizer.from_pretrained(MODEL)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+
+    analyzer = SentimentIntensityAnalyzer()
     # pre allocate [] to the size of sentences to remove dynamic allocation
     
     scores_dict = {
@@ -79,9 +83,16 @@ def sentiment_analysis(df):
     df['vader_neu']   = scores_dict['vader_neu']
     df['vader_pos']   = scores_dict['vader_pos']
     return df
+         
+def data_folder_maker():
+    create_output_directory("data")
+    script_path = os.path.abspath(__file__)
+    script_directory = os.path.dirname(script_path)
+    dataDir = os.path.join(script_directory, "data") #datafolder is a returned path, causes issues #FIXME
+    return dataDir
         
-
-def analyzer_wrapper(textFiles):
+def analysis_wrapper(textFiles):
+    dataDir = data_folder_maker()
     for file in textFiles:
         text_dict, fileName = hold_text(file) 
         name, _ = os.path.splitext(fileName)
@@ -91,23 +102,3 @@ def analyzer_wrapper(textFiles):
         df = sentiment_analysis(df)
         df.to_csv(f'{outputFile}' + '.csv', index=True)
 
-
-textDirectory = "/Users/mattheweggers/repos/audisect/outputFolder" #make this changeable
-
-textFiles = find_files(textDirectory, extensions={'.txt'})
-
-
-MODEL = "cardiffnlp/twitter-roberta-base-sentiment" #removed the f string - may come in handy for others
-tokenizer = AutoTokenizer.from_pretrained(MODEL)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-
-analyzer = SentimentIntensityAnalyzer()
-
-# Get datafolder directory - there has to be a simpler way lol
-dataFolder = create_output_directory("data")
-script_path = os.path.abspath(__file__)
-script_directory = os.path.dirname(script_path)
-dataDir = os.path.join(script_directory, "data") #datafolder is a returned path, causes issues #FIXME
-    
-
-analyzer_wrapper(textFiles)
