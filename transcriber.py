@@ -15,22 +15,22 @@ from glob import glob # may refactor w this, idk yet.
 
 # had to fix macOS ssl certificate trust bc python 13.3 /Applications/Python\ 3.13/Install\ Certificates.command
 
-
+# FIXME, can use exit_ok=true in try section, remove fileexists error
 def create_output_directory(outputFolder): 
     try:
         os.mkdir(outputFolder)
-        print(f"Folder '{outputFolder} created successfully")
+        print(f"Folder '{outputFolder}' created successfully")
     except FileExistsError:
-        print(f"Folder '{outputFolder} already exists")
+        print(f"Folder '{outputFolder}' already exists")
     except OSError as e:
         print(f"Error creating folder: {e}")
     
-    return os.path.dirname(outputFolder)
+    return os.path.abspath(outputFolder)
 
 
 extensions = {".wav",".mp3",".m4a",".mp4"}
 # Locates audio files and adds their absolute path to a list - FIXME roughly redundant with does_file_exist. possible future change
-def find_files(directory, extensions):
+def add_files_to_list(directory, extensions):
     filePaths = []
     for (root, dirs, files) in os.walk(directory, topdown=True):
         for name in files:
@@ -42,7 +42,14 @@ def find_files(directory, extensions):
         
 # Checks whether a text file exists in the output directory.
 def does_file_exist(file, outputDirectory):
-    fullFilePath = os.path.join(outputDirectory, file)
+    fileName = file_splitter(file)
+    fullFilePath = os.path.join(outputDirectory, fileName)
+    fullFilePath = fullFilePath + '.txt'
+    print(f"full file path: {fullFilePath}")
+
+    # FIXME IT NEEDS TO CHECK IF IT IS A TXT FILE
+    #SPLIT FILE, check in output directory
+  
     if os.path.exists(fullFilePath):
         return True
     else:
@@ -67,9 +74,11 @@ def transcribe(allFiles, outputDirectory, model_size): # Nothing returned
     model = whisper.load_model(model_size) # add user changeable CLI
      
     for file in allFiles:
+        print(f"within transcribe(), outputdirectory: {outputDirectory}")
         fileExists = does_file_exist(file, outputDirectory)
         
         if fileExists is True:
+            #FIXME print(os.path.dirname(file))
             print(f"{os.path.basename(file)} has already been transcribed")
         else:
             print(f"TRANSCRIBING : {file}")
@@ -82,9 +91,11 @@ def transcribe(allFiles, outputDirectory, model_size): # Nothing returned
             write_to_file(outputDirectory, outputFileName, result)
 
 
-def run_transcription(audio_directory, outputFolder):
+def run_transcription(audio_directory, outputFolder, model_size):
     outputDirectory = os.path.join(os.getcwd(), outputFolder)
     outputDirectory = os.path.abspath(outputDirectory)
     create_output_directory(outputFolder)
-    allFiles = find_files(audio_directory, extensions)
-    transcribe(allFiles, outputDirectory)
+    #print(f"WITHIN run_transcription(), outputDirectory: {outputDirectory}")
+    #print(f"WITHIN run_transcription(), outputfolder: {outputFolder}")
+    allFiles = add_files_to_list(audio_directory, extensions)
+    transcribe(allFiles, outputDirectory, model_size)

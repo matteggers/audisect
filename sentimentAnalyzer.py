@@ -7,7 +7,7 @@ from nltk.tokenize import PunktSentenceTokenizer
 import pandas as pd
 import os
 from transcriber import create_output_directory
-from transcriber import find_files
+from transcriber import add_files_to_list
 
 # refactor at some point using np to reduce time to run this
 
@@ -93,12 +93,17 @@ def data_folder_maker():
         
 def analysis_wrapper(textFiles):
     dataDir = data_folder_maker()
+    print("dataDirmade")
     for file in textFiles:
         text_dict, fileName = hold_text(file) 
+        print("text has been held")
         name, _ = os.path.splitext(fileName)
         outputFile = os.path.join(dataDir, name)
         df = make_dataframe(text_dict.keys(), text_dict.values())
+        print("dataframe made")
         
         df = sentiment_analysis(df)
+        print("sentiment analysis made")
         df.to_csv(f'{outputFile}' + '.csv', index=True)
+        print("csv saved?")
 

@@ -1,9 +1,7 @@
-from test import run_transcription, create_output_directory
-from sentimentAnalyzer import find_files
-from sentimentAnalyzer import analysis_wrapper
+from transcriber import run_transcription, create_output_directory
+from sentimentAnalyzer import add_files_to_list, analysis_wrapper
 import sentimentAnalyzer
 import os
-
 import click
 
 @click.command()
@@ -12,19 +10,21 @@ import click
 @click.option("--size", default="medium", help="Whisper model size.")
 
 
-def main(input, output, size):
-    run_transcription(input, "transcriptions", size)
-    textDirectory = create_output_directory(output)
-    textFiles = find_files(textDirectory, extensions={'.txt'})
-    analysis_wrapper(textFiles)
-    
+def main(input, size):
+    outputFolder = "transcriptions"
+    currentDirectory = os.getcwd()
     
 
+    textDirectory = create_output_directory("data")
+    transcriptionDirectory = os.path.join(currentDirectory, outputFolder)
+    print(f"textDirectory: {textDirectory}")
+    run_transcription(input, outputFolder, size)
+    print("transcription ran")
+    textFiles = add_files_to_list(transcriptionDirectory, extensions={'.txt'})
+    print(f"textFiles added to list: {textFiles}")
+    analysis_wrapper(textFiles)
     
-    
-    
-    
-    
+ 
 if __name__ == "__main__":
     main()
 
