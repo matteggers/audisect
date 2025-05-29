@@ -198,7 +198,7 @@ This tool is far from perfect, here are some special considerations:
 
 
 ## Results
-Coming soon! I can't wait to share some (non-surprising) results about news broadcasts!
+Coming soon! I can't wait to share some (unsurprising) results about news broadcasts!
 
 
 <!-- CONTRIBUTING -->
