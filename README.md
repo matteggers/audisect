@@ -164,10 +164,19 @@ Audisect utilizes a command-line-interface (CLI). The following command must be 
 ```sh
     python3 audisect.py --input "AUDIO_FOLDER_PATH" --size "MODEL_SIZE"
 ```
-
+The Dataframe is output in the following form:
+| index | sentence | roberta_neg | roberta_neu | roberta_pos | vader_neg | vader_neu | vader_pos | 
+| ----- | -------- | ----------- | ----------- | ----------- | --------- | --------- | --------- | 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## WHAT DO THESE NUMBERS MEAN?????
+
+| Meaning | RoBERTa | VADER | 
+| ------- | ------- | ----- |
+|   Neg   | <-0.05  | <-0.05|
+|   Neu   | btwn    | btwn  |
+|   Pos   | >0.05   | >0.05 |
 
 
 <!-- ROADMAP -->
@@ -177,7 +186,7 @@ Audisect utilizes a command-line-interface (CLI). The following command must be 
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
 - [ ] Built-in plotting: Allow users to plot sentiment for each file transcribed.
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Limitations
 This tool is far from perfect, here are some special considerations:
@@ -220,7 +229,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the project_license. See `LICENSE.txt` for more information.
+Distributed under the AGPL-3.0 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
