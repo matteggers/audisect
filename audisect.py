@@ -13,8 +13,6 @@ import click
 def main(input, size):
     outputFolder = "transcriptions"
     currentDirectory = os.getcwd()
-    
-
     textDirectory = create_output_directory("data")
     transcriptionDirectory = os.path.join(currentDirectory, outputFolder)
     print(f"textDirectory: {textDirectory}")
