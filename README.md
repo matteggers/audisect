@@ -54,7 +54,7 @@
 
 
 
-<!-- TABLE OF CONTENTS -->
+<!-- TABLE OF CONTENTS 
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -79,10 +79,10 @@
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
+-->
 
 
-
-<!-- ABOUT THE PROJECT -->
+<!-- ABOUT THE PROJECT 
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
@@ -90,9 +90,9 @@
 Here's a blank template to get started. To avoid retyping too much info, do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`, `project_license`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
 
-
-
+<!--
 ### Built With
 
 * [![Next][Next.js]][Next-url]
@@ -105,7 +105,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 * [![JQuery][JQuery.com]][JQuery-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+-->
 
 
 <!-- GETTING STARTED -->
@@ -126,7 +126,7 @@ For now, you must install all required libraries within the cloned directory. I 
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Navigate to the parent directory of where the files are located (or wherever you'd like)
 2. Clone the repo
    ```sh
    git clone https://github.com/matteggers/audisect.git
@@ -184,7 +184,7 @@ This tool is far from perfect, here are some special considerations:
 - VADER is trained for social media text. Although a great general purpose tool, it may not capture the context of media that differ from this.
 - The default ML model is also trained from social media (twitter), same reason applies.
 - Accuracy of transcriptions: Even though Whisper is pretty good at transcribing, I have ran into issues that may alter the results of your analysis
-
+- Output only to CSV, I know many would like different file types
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -208,13 +208,14 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!--
 ### Top contributors:
 
 <a href="https://github.com/github_username/repo_name/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=github_username/repo_name" alt="contrib.rocks image" />
 </a>
 
-
+-->
 
 <!-- LICENSE -->
 ## License
