@@ -95,7 +95,5 @@ def run_transcription(audio_directory, outputFolder, model_size):
     outputDirectory = os.path.join(os.getcwd(), outputFolder)
     outputDirectory = os.path.abspath(outputDirectory)
     create_output_directory(outputFolder)
-    #print(f"WITHIN run_transcription(), outputDirectory: {outputDirectory}")
-    #print(f"WITHIN run_transcription(), outputfolder: {outputFolder}")
     allFiles = add_files_to_list(audio_directory, extensions)
     transcribe(allFiles, outputDirectory, model_size)
