@@ -1,13 +1,6 @@
-# Initial test
-# Use whisper to analyze a file located within a set folder
-# Then wait for the transcript and run it through another model for tonality and rhythm.
-# output these to a csv, with first column being tonality, second being rhythm for each sentence, and third being
-# the indicating keyword, and the fourth being the actual sentence.
-# need a list of keywords for each emotion and run through another model/recognition script
-
-
 import os
 import whisper
+from pathlib import Path
 # Make a note to user that if on mac, pasting "" into notes auto corrects to em dash. Need a different text editor
 # yt-dlp -f bestaudio -x --audio-format wav "URL"
 
@@ -46,10 +39,11 @@ def does_file_exist(file, outputDirectory):
     # FIXME IT NEEDS TO CHECK IF IT IS A TXT FILE
     #SPLIT FILE, check in output directory
   
-    if os.path.exists(fullFilePath):
-        return True
-    else:
-        return False
+    #if os.path.exists(fullFilePath):
+    #    return True
+    #else:
+    #    return False
+    return True if os.path.exists(fullFilePath) else False
     
 def file_splitter(file):
     _, tail = os.path.split(file)
@@ -59,15 +53,15 @@ def file_splitter(file):
 
 # takes fileName (w extension) and writes the content of the transcription to it
 def write_to_file(outputDirectory, outputFileName, modelResult):
-    outputFile = os.path.join(outputDirectory, outputFileName)
+    outputFile = Path(outputDirectory) / outputFileName
     
     with open(outputFile, "w") as f:
         f.write(modelResult["text"])
 
 # Transcribes untranscribed files
-def transcribe(allFiles, outputDirectory, model_size): # Nothing returned 
+def transcribe(allFiles, outputDirectory, model_size):
     
-    model = whisper.load_model(model_size) # add user changeable CLI
+    model = whisper.load_model(model_size) 
      
     for file in allFiles:
         print(f"within transcribe(), outputdirectory: {outputDirectory}")
@@ -77,7 +71,7 @@ def transcribe(allFiles, outputDirectory, model_size): # Nothing returned
             print(f"{os.path.basename(file)} has already been transcribed")
         else:
             print(f"TRANSCRIBING : {file}")
-            result = model.transcribe(file, fp16 = False) # false bc mac
+            result = model.transcribe(file, fp16 = False) # false bc mac -> FIXME need fixing
     
             name = file_splitter(file)
 
@@ -87,8 +81,7 @@ def transcribe(allFiles, outputDirectory, model_size): # Nothing returned
 
 
 def run_transcription(audio_directory, outputFolder, model_size):
-    outputDirectory = os.path.join(os.getcwd(), outputFolder)
-    outputDirectory = os.path.abspath(outputDirectory)
-    create_output_directory(outputFolder)
+    outputDirectory = Path(Path.cwd()) / outputFolder
+    outputDirectory = outputDirectory.resolve()
     allFiles = add_files_to_list(audio_directory, extensions)
     transcribe(allFiles, outputDirectory, model_size)

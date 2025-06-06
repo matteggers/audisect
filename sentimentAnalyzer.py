@@ -8,6 +8,7 @@ import pandas as pd
 import os
 from transcriber import create_output_directory
 from transcriber import add_files_to_list
+from pathlib import Path
 
 # refactor at some point using np to reduce time to run this
 
@@ -29,8 +30,7 @@ def read_text(fileDirectory):
 def hold_text(text):
     text_dict = {}
     allText = read_text(text)
-    fileName = os.path.split(text)
-    fileName = fileName[1]
+    fileName = Path(text).stem
     sentences = PunktSentenceTokenizer().tokenize(allText)
     text_dict.update({fileName: sentences})
     return text_dict, fileName
@@ -84,26 +84,16 @@ def sentiment_analysis(df):
     df['vader_pos']   = scores_dict['vader_pos']
     return df
          
-def data_folder_maker():
-    create_output_directory("data")
-    script_path = os.path.abspath(__file__)
-    script_directory = os.path.dirname(script_path)
-    dataDir = os.path.join(script_directory, "data") #datafolder is a returned path, causes issues #FIXME
-    return dataDir
-        
 def analysis_wrapper(textFiles):
-    dataDir = data_folder_maker()
-    print("dataDirmade")
+    script_dir = Path(__file__).parent.resolve()
+    dataDir = script_dir / "data"
+
     for file in textFiles:
         text_dict, fileName = hold_text(file) 
-        print("text has been held")
-        name, _ = os.path.splitext(fileName)
-        outputFile = os.path.join(dataDir, name)
+        name = Path(fileName).stem
+        outputFile = Path(dataDir).joinpath(name)
         df = make_dataframe(text_dict.keys(), text_dict.values())
-        print("dataframe made")
-        
         df = sentiment_analysis(df)
-        print("sentiment analysis made")
         df.to_csv(f'{outputFile}' + '.csv', index=True)
-        print("csv saved?")
+        print(f'CSV: {name} saved!')
 
