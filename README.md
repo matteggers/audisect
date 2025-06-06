@@ -160,6 +160,22 @@ For now, you must install all required libraries within the cloned directory. I 
 ## Usage
 
 Audisect utilizes a command-line-interface (CLI). The following command must be used within the folder Audisect was installed in. The audio folder path must be an absolute path, not relative to the current working directory. The model size refers to Whisper's model size, for more information see OpenAI's Whisper documentation.
+General rule (not all sizes included: 
+* Medium/Turbo = 6GB VRAM
+* Tiny         = 1GB VRAM
+The smaller the model, the faster it is.
+
+** Now with Docker **
+```
+docker run -it \
+  -v $(pwd):/app \
+  -v $HOME/.cache/whisper:/root/.cache/whisper \
+  -v $HOME/.cache/huggingface:/root/.cache/huggingface \
+  audisect \
+  --input "/app/AUDIO_FOLDER_NAME" \
+  --size "MODEL_SIZE"
+```
+
 
 ```sh
     python3 audisect.py --input "AUDIO_FOLDER_PATH" --size "MODEL_SIZE"
@@ -178,6 +194,7 @@ The Dataframe is output in the following form:
 |   Neu   | btwn    | btwn  |
 |   Pos   | >0.05   | >0.05 |
 
+Note: Need to check on the RoBERTa scores - may be inaccurate
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -186,6 +203,7 @@ The Dataframe is output in the following form:
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
 - [ ] Built-in plotting: Allow users to plot sentiment for each file transcribed.
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
+- [X] Docker support
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Limitations
