@@ -126,6 +126,15 @@ For now, you must install all required libraries within the cloned directory. I 
 
 ### Installation
 
+#### Docker
+1. Navigate to the release on the side of this repo.
+2 Download the audisect.tar file
+3. Place it in your desired directory
+4. Run the docker image (assuming Docker is installed): ```docker load < audisect.tar```
+5. If your audio folder exists on the same level as the tar: **Edit the capitalized sections**: ```docker run -it -v "$PWD/AUDIO_FOLDER_NAME:/audio" audisect --input "/audio" --size "MODEL_SIZE"``` 
+6. If your audio folder exists on a *different* level as the tar: ```docker run -it -v "ABSOLUTE AUDIO PATH:/audio" audisect --input "/audio" --size "MODEL_SIZE"``` 
+
+#### Manual 
 1. Navigate to the parent directory of where the files are located (or wherever you'd like)
 2. Clone the repo
    ```sh
