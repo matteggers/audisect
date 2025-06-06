@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audisect"
+version = "0.1.0"
+description = "Audio transcription, segmentation, and sentiment analysis tool"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Matthew Eggers", email = "94013259+matteggers@users.noreply.github.com" }
+]
+dependencies = [
+  "openai-whisper",
+  "nltk",
+  "ffmpeg",
+  "torch",         
+  "numpy",
+  "vaderSentiment"
+]
+requires-python = ">=3.12"
+
+[project.scripts]
+audisect = "audisect.main:main"

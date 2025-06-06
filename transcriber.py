@@ -8,12 +8,8 @@
 
 import os
 import whisper
-from glob import glob # may refactor w this, idk yet.
 # Make a note to user that if on mac, pasting "" into notes auto corrects to em dash. Need a different text editor
 # yt-dlp -f bestaudio -x --audio-format wav "URL"
-
-
-# had to fix macOS ssl certificate trust bc python 13.3 /Applications/Python\ 3.13/Install\ Certificates.command
 
 # FIXME, can use exit_ok=true in try section, remove fileexists error
 def create_output_directory(outputFolder): 
@@ -78,7 +74,6 @@ def transcribe(allFiles, outputDirectory, model_size): # Nothing returned
         fileExists = does_file_exist(file, outputDirectory)
         
         if fileExists is True:
-            #FIXME print(os.path.dirname(file))
             print(f"{os.path.basename(file)} has already been transcribed")
         else:
             print(f"TRANSCRIBING : {file}")
