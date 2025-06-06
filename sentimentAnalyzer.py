@@ -5,8 +5,6 @@ from scipy.special import softmax
 import nltk
 from nltk.tokenize import PunktSentenceTokenizer
 import pandas as pd
-import os
-from transcriber import create_output_directory
 from transcriber import add_files_to_list
 from pathlib import Path
 

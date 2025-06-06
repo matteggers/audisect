@@ -1,7 +1,6 @@
-from transcriber import run_transcription, create_output_directory
+from transcriber import run_transcription
 from sentimentAnalyzer import add_files_to_list, analysis_wrapper
 import sentimentAnalyzer
-import os
 import click
 from pathlib import Path
 
