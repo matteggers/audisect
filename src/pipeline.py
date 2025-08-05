@@ -56,7 +56,7 @@ class Pipeline:
     # FIXME This is a bit messy, should be refactored AND passing the audio file instead of the txt right now. Update the attributes of file to have path to both
     
     def perform_analysis(self, file: File) -> None:
-        print(f"Performing analysis on {file.path.name}, file is of type {type(file)}")
+        logger.info(f"Performing analysis on {file.path.name}, file is of type {type(file)}")
         if self.handler.file_exists(file.path, ".csv"):
             logger.info(f"CSV file already exists for {file.path.name}, skipping analysis.")
             return
@@ -65,15 +65,17 @@ class Pipeline:
         
         contents = self.handler.read_file(file)
         sentences = self.sentiment_analyzer.tokenize_to_sentences(contents)
-        logger.info(f"Number of sentences in {file.path.name}: {len(sentences)}")
+        #logger.info(f"Number of sentences in {file.path.name}: {len(sentences)}")
         
         for sentence in sentences:
             model_scores = self.sentiment_analyzer.model_sentiment_scores(sentence)
             vader_scores = self.sentiment_analyzer.vader_analyzer(sentence)
             self.dataframe_store.add_sentiment(model_scores, vader_scores, sentence)
-            
+        
+        logger.info(f"Analysis complete for {file.path.name}, saving results.")
         csv_path = self.handler.get_csv_path(file)
         self.dataframe_store.df.to_csv(csv_path, index=True)
+        logger.info(f"Analysis for {file.path.name} completed and saved to CSV.")
         #print(f"Reading from txt path: {txt_path}")
         #contents = self.handler.read_file(self.handler.get_txt_path(file))
         #sentences = self.sentiment_analyzer.tokenize_to_sentences(contents)
@@ -95,7 +97,9 @@ class Pipeline:
             self.perform_analysis(file_obj)
         
     def run(self):
-        logger.info("Pipeline starting")    
+        logger.info("Pipeline starting...") 
+        logger.info(f"Input directory: {self.handler.input_directory}, Output directory: {self.handler.output_directory}")
+        logger.info(f"Transcription model size: {self.audio_transcriber.model_size}, Sentiment model: {self.sentiment_analyzer.sentiment_model}")
         self.enqueue_transcription()
         self.transcribe_all()
         self.analyze_all()

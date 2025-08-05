@@ -46,8 +46,8 @@ class FileHandler:
             self.set_output_paths(file_obj)
         return file_obj.txt_path
     
-    def get_csv_path(self, file: File, suffix: str = ".csv") -> Path:
-        return file.csv_path
+    def get_csv_path(self, file_obj: File) -> Path:
+        return file_obj.csv_path
     
     def file_exists(self, file_path: Path, suffix: str) -> bool:
         file_name = file_path.stem
