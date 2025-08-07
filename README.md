@@ -195,7 +195,7 @@ The Dataframe is output in the following form:
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## WHAT DO THESE NUMBERS MEAN?????
+## Interpreting Results
 
 | Meaning | RoBERTa | VADER | 
 | ------- | ------- | ----- |
@@ -210,8 +210,10 @@ Note: Need to check on the RoBERTa scores - may be inaccurate
 
 - [ ] Alterable transcription output type - Allow users to output files other than      '.txt'. This allows users to use time stamps as part of their analysis
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
-- [ ] Built-in plotting: Allow users to plot sentiment for each file transcribed.
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
+- [ ] Implement multi-threading to reduce runtime
+- [ ] Verbose start up sequence (Present user with options instead of copying commands from repo. All contained within program)
+- [ ] Add option to use Docker or a leaner python package
 - [X] Docker support
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -222,10 +224,6 @@ This tool is far from perfect, here are some special considerations:
 - Accuracy of transcriptions: Even though Whisper is pretty good at transcribing, I have ran into issues that may alter the results of your analysis
 - Output only to CSV, I know many would like different file types
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## Results
-Coming soon! I can't wait to share some (unsurprising) results about news broadcasts!
 
 
 <!-- CONTRIBUTING -->
