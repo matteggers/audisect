@@ -3,6 +3,8 @@ from pathlib import Path
 import logging
 from .pipeline import Pipeline
 import warnings
+import platform
+import typer
 
 # FIXME Remove the warning through update
 warnings.filterwarnings(
@@ -36,6 +38,9 @@ warnings.filterwarnings(
 
 def main(input_dir: Path, output_dir: Path, model_size: str):
     # Entry point: find audio files, transcribe, analyze sentiment, and save results.
+    if platform.system() != "Linux":
+        typer.secho("This script is designed to run on Linux systems only.", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
 
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
