@@ -14,7 +14,7 @@ class AudioTranscriber:
         self.model = whisper.load_model(model_size)
     
     def transcribe(self, file_obj: File) -> str:
-        logger.info(f"Transcribing file: {file_obj.path.name} with model size {self.model_size}")
+        logger.info(f"Transcribing file: {file_obj.path.name}")
         result = self.model.transcribe(str(file_obj.path), fp16 = False)
         logger.info(f"Transcription complete for {file_obj.path.name}")
         file_obj.is_transcribed = True
