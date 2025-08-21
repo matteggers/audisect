@@ -16,6 +16,9 @@ class AudioTranscriber:
     def transcribe(self, file_obj: File) -> str:
         logger.info(f"Transcribing file: {file_obj.path.name} with model size {self.model_size}")
         result = self.model.transcribe(str(file_obj.path), fp16 = False)
+        logger.info(f"Transcription complete for {file_obj.path.name}")
+        file_obj.is_transcribed = True
+        file_obj.contents = result["text"]
         return result["text"]
     
         # TODO Save metadata into file object

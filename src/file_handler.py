@@ -1,6 +1,7 @@
 from pathlib import Path
 from glob import glob
 from .file import File
+import logging
 
 # Handles the creation of file objects
 
@@ -8,6 +9,8 @@ from .file import File
 # File Handler performs the following:
 # Initializes itself and locates all audio files in the input directory
 # 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class FileHandler:
     def __init__(self, input_directory: Path, output_directory: Path, allowed_extensions: dict) -> Path:
@@ -28,9 +31,11 @@ class FileHandler:
         for file in self.input_directory.glob("*"):
             if file.suffix.lower() in self.extensions:
                 files.append(file)
+                logger.info(f"Located audio file: {file.name}")
         return files
     
     def create_object(self, file: Path) -> File:
+        logger.infO(f"Creating File object for {file.name}")
         return File(file)
     
     # Could just put this in creator
@@ -41,6 +46,7 @@ class FileHandler:
 
     def get_txt_path(self, file_obj: File) -> Path:
         if not isinstance(file_obj, File):
+            logger.error(f"Expected File object, got {type(file_obj).__name__}")
             raise TypeError(f"get_txt_path expected File, got {type(file_obj).__name__}: {file_obj}")
         if file_obj.txt_path is None:
             self.set_output_paths(file_obj)
@@ -59,7 +65,6 @@ class FileHandler:
         return False
 
 
-    
     def read_file(self, file: File) -> str:
         txt_path = self.get_txt_path(file)
         try:
@@ -75,5 +80,6 @@ class FileHandler:
             destination_path = self.get_csv_path(file)
             
         destination_path.write_text(text, encoding="utf-8")
-
+        
+    
         

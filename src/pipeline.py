@@ -9,6 +9,7 @@ import logging
 
 # @FUTURE
 # Use threading to analyze more at once
+# NEED NVIDIA DEV CONTAINER
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -104,6 +105,9 @@ class Pipeline:
         self.transcribe_all()
         self.analyze_all()
         logger.info("Pipeline finished")
+        
+    
+    @BUGFIX File is saving ONLY the first analysis to all the CSVs, need to reset the dataframe for each file
         
         
             
