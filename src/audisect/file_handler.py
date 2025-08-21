@@ -35,7 +35,7 @@ class FileHandler:
         return files
     
     def create_object(self, file: Path) -> File:
-        logger.infO(f"Creating File object for {file.name}")
+        logger.info(f"Creating File object for {file.name}")
         return File(file)
     
     # Could just put this in creator

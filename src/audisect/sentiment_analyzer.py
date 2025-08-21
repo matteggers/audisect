@@ -20,8 +20,8 @@ class SentimentAnalyzer:
     def __init__(self, sentiment_model: str, df: DataframeStore):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.sentiment_model = sentiment_model
-        self.tokenizer = AutoTokenizer.from_pretrained(self.sentiment_model)
-        self.model = AutoModelForSequenceClassification.from_pretrained(sentiment_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.sentiment_model, use_fast=True)
+        self.model = AutoModelForSequenceClassification.from_pretrained(sentiment_model, use_safetensors=True)
         self.model.to(self.device)
         self.model.eval()
         self.vader_analyzer = CallableVader()

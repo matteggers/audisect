@@ -57,40 +57,29 @@ class Pipeline:
     # FIXME This is a bit messy, should be refactored AND passing the audio file instead of the txt right now. Update the attributes of file to have path to both
     
     def perform_analysis(self, file: File) -> None:
-        logger.info(f"Performing analysis on {file.path.name}, file is of type {type(file)}")
+        
         if self.handler.file_exists(file.path, ".csv"):
-            logger.info(f"CSV file already exists for {file.path.name}, skipping analysis.")
             return
         logger.info(f"Analyzing {file.path.name}...")
-        
-        
+
         contents = self.handler.read_file(file)
         sentences = self.sentiment_analyzer.tokenize_to_sentences(contents)
-        #logger.info(f"Number of sentences in {file.path.name}: {len(sentences)}")
-        
-        for sentence in sentences:
-            model_scores = self.sentiment_analyzer.model_sentiment_scores(sentence)
-            vader_scores = self.sentiment_analyzer.vader_analyzer(sentence)
-            self.dataframe_store.add_sentiment(model_scores, vader_scores, sentence)
-        
-        logger.info(f"Analysis complete for {file.path.name}, saving results.")
+
+        rows = []
+        for s in sentences:
+            m = self.sentiment_analyzer.model_sentiment_scores(s)
+            v = self.sentiment_analyzer.vader_sentiment_scores(s)
+            rows.append({
+                "sentence": s,
+                "model_neg": m[0], "model_neu": m[1], "model_pos": m[2],
+                "vader_neg": v["neg"], "vader_neu": v["neu"], "vader_pos": v["pos"],
+                "vader_compound": v["compound"],
+            })
+
+        import pandas as pd
+        out_df = pd.DataFrame(rows)
         csv_path = self.handler.get_csv_path(file)
-        self.dataframe_store.df.to_csv(csv_path, index=True)
-        logger.info(f"Analysis for {file.path.name} completed and saved to CSV.")
-        #print(f"Reading from txt path: {txt_path}")
-        #contents = self.handler.read_file(self.handler.get_txt_path(file))
-        #sentences = self.sentiment_analyzer.tokenize_to_sentences(contents)
-        #logger.info(f"Number of sentences in {file.path.name}: {len(sentences)}")   
-
-        #for sentence in sentences:
-        #    model_scores = self.sentiment_analyzer.model_sentiment_scores(sentence)
-        #    vader_scores = self.sentiment_analyzer.vader_analyzer(sentence)
-        #    self.dataframe_store.add_sentiment(self.dataframe_store, model_scores, vader_scores)
-
-        # FIXME Path injection vulnerability
-        #csv_path = self.handler.get_csv_path(file)
-        #self.dataframe_store.df.to_csv(csv_path, index=True)
-        
+        out_df.to_csv(csv_path, index=False)
         
     def analyze_all(self) -> None:
         while self.to_analyze:
@@ -107,7 +96,7 @@ class Pipeline:
         logger.info("Pipeline finished")
         
     
-    @BUGFIX File is saving ONLY the first analysis to all the CSVs, need to reset the dataframe for each file
+    #@BUGFIX File is saving ONLY the first analysis to all the CSVs, need to reset the dataframe for each file
         
         
             
