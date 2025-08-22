@@ -242,6 +242,10 @@ This tool is far from perfect, here are some special considerations:
 
 Currently processing large amounts of data on news broadcasts. Results coming soon.
 
+## Preview versions
+
+Unstable versions of Audisect can be found on the dev branch
+
 <!-- CONTRIBUTING -->
 
 <!--
