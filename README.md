@@ -1,5 +1,7 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a id="readme-top"></a>
+
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -7,8 +9,6 @@
 *** Don't forget to give the project a star!
 *** Thanks again! Now go create something AMAZING! :D
 -->
-
-
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -25,7 +25,6 @@
 [![project_license][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 -->
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -52,9 +51,7 @@
   </p>
 </div>
 
-
-
-<!-- TABLE OF CONTENTS 
+<!-- TABLE OF CONTENTS
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -81,8 +78,7 @@
 </details>
 -->
 
-
-<!-- ABOUT THE PROJECT 
+<!-- ABOUT THE PROJECT
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
@@ -107,142 +103,146 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 -->
 
-
 <!-- GETTING STARTED -->
-## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+### Purpose
 
+This tool was birthed out of curiosity regarding national news sentiment. Initially, this was supposed to find the most used word in a collection of NBC news broadcasts after I heard "chilling details" multiple days in a row. My family frequently watches cable news -\_-. I pivoted into finding sentiment as that would provide more insight into how this form of media may affect a person's emotional state.
 
 ### Prerequisites
 
-For now, you must install all required libraries within the cloned directory. I aim to add the libraries within the main download
-
-* 
-  ```sh
-  Python 12 required. Python 13 will NOT work
-  ```
+- Ubuntu or WSL2
+- Python 3.12
+- Nvidia GPU
+- CUDA PyTorch >= 2.6 wheel
+- ffmpeg in PATH
 
 ### Installation
 
-#### Docker
-1. Navigate to the release on the side of this repo.
-2 Download the audisect.tar file
-3. Place it in your desired directory
-4. Run the docker image (assuming Docker is installed): ```docker load < audisect.tar```
-5. If your audio folder exists on the same level as the tar: **Edit the capitalized sections**: ```docker run -it -v "$PWD/AUDIO_FOLDER_NAME:/audio" audisect --input "/audio" --size "MODEL_SIZE"``` 
-6. If your audio folder exists on a *different* level as the tar: ```docker run -it -v "ABSOLUTE AUDIO PATH:/audio" audisect --input "/audio" --size "MODEL_SIZE"``` 
-
-#### Manual 
-1. Navigate to the parent directory of where the files are located (or wherever you'd like)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/matteggers/audisect.git
-   ```
-3. Install and activate a python venv
-   ```sh
-   python -m venv .venv
-   source .venv/bin/activate
-   ```
-4. Install the following dependencies
-   ```sh
-   pip install -U openai-whisper
-   pip install vaderSentiment
-   pip install transformers
-   pip install scipy
-   pip install nltk
-   pip install pandas
-   pip isntall ffmpeg
-   ```
-5. Change git remote url to avoid accidental pushes to base project
-   ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
-   ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Audisect utilizes a command-line-interface (CLI). The following command must be used within the folder Audisect was installed in. The audio folder path must be an absolute path, not relative to the current working directory. The model size refers to Whisper's model size, for more information see OpenAI's Whisper documentation.
-General rule (not all sizes included: 
-* Medium/Turbo = 6GB VRAM
-* Tiny         = 1GB VRAM
-The smaller the model, the faster it is.
-
-** Now with Docker **
-```
-docker run -it \
-  -v $(pwd):/app \
-  -v $HOME/.cache/whisper:/root/.cache/whisper \
-  -v $HOME/.cache/huggingface:/root/.cache/huggingface \
-  audisect \
-  --input "/app/AUDIO_FOLDER_NAME" \
-  --size "MODEL_SIZE"
-```
-
+Clone: https://github.com/matteggers/audisect.git
 
 ```sh
-    python3 audisect.py --input "AUDIO_FOLDER_PATH" --size "MODEL_SIZE"
+cd audisect
+python3 -m venv .venv
+source .venv/bin/activate
+sudo apt-get update && sudo apt-get install -y ffmpeg
+pip install --upgrade --index-url https://download.pytorch.org/whl/cu121 "torch>= 2.6"
+
+# Install Audisect
+pip install -e .
 ```
-The Dataframe is output in the following form:
-| index | sentence | roberta_neg | roberta_neu | roberta_pos | vader_neg | vader_neu | vader_pos | 
-| ----- | -------- | ----------- | ----------- | ----------- | --------- | --------- | --------- | 
+
+#### Docker
+
+Coming soon. Previously had issues.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## WHAT DO THESE NUMBERS MEAN?????
+<!-- USAGE EXAMPLES -->
 
-| Meaning | RoBERTa | VADER | 
-| ------- | ------- | ----- |
-|   Neg   | <-0.05  | <-0.05|
-|   Neu   | btwn    | btwn  |
-|   Pos   | >0.05   | >0.05 |
+## Usage
 
-Note: Need to check on the RoBERTa scores - may be inaccurate
+Audisect is used through a CLI. The following are two supported methods for using audisect.
 
+### Transcription Model Sizes - Directly from OpenAI's Whisper
+
+There are six model sizes, four with English-only versions, offering speed and accuracy tradeoffs.
+Below are the names of the available models and their approximate memory requirements and inference speed relative to the large model.
+The relative speeds below are measured by transcribing English speech on a A100, and the real-world speed may vary significantly depending on many factors including the language, the speaking speed, and the available hardware.
+
+|  Size  | Parameters | English-only model | Multilingual model | Required VRAM | Relative speed |
+| :----: | :--------: | :----------------: | :----------------: | :-----------: | :------------: |
+|  tiny  |    39 M    |     `tiny.en`      |       `tiny`       |     ~1 GB     |      ~10x      |
+|  base  |    74 M    |     `base.en`      |       `base`       |     ~1 GB     |      ~7x       |
+| small  |   244 M    |     `small.en`     |      `small`       |     ~2 GB     |      ~4x       |
+| medium |   769 M    |    `medium.en`     |      `medium`      |     ~5 GB     |      ~2x       |
+| large  |   1550 M   |        N/A         |      `large`       |    ~10 GB     |       1x       |
+| turbo  |   809 M    |        N/A         |      `turbo`       |     ~6 GB     |      ~8x       |
+
+### Using custom Sentiment Analysis Models
+
+1. Navigate to src/audisect/pipeline.py
+2. In init, change contents of string to desired HuggingFace model.
+
+### WSL
+
+- Using Windows path style
+
+```sh
+audisect run \
+ -i "$(wslpath -a -u 'C:\Users\<YOU>\<INPUT FOLDER PATH>')" \
+  -o "$(wslpath -a -u 'C:\Users\<YOU>\<OUTPUT FOLDER PATH>')" \
+ -s size
+```
+
+- Using WSL path style
+
+```sh
+audisect run \
+  -i "/mnt/c/Users/<YOU>/Downloads/input_test" \
+  -o "/mnt/c/Users/<YOU>/Downloads/output_test" \
+  -s size
+```
+
+### Ubuntu
+
+```sh
+audisect run \
+  -i "/home/<you>/input_test" \
+  -o "/home/<you>/output_test" \
+  -s size
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Output Structure
+
+```text
+output/
+├─ csv/
+│  └─ example.csv
+└─ txt/
+   └─ example.txt
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Interpreting Sentiment Scores
+
+The score for each is between -1 and 1. Any result between -0.05 and 0.05 is neutral, with results >0.05 being positive and opposite for negative sentiment.
+
+| Meaning | RoBERTa | VADER  |
+| ------- | ------- | ------ |
+| Neg     | <-0.05  | <-0.05 |
+| Neu     | btwn    | btwn   |
+| Pos     | >0.05   | >0.05  |
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- ROADMAP -->
+
 ## Roadmap
 
-- [ ] Alterable transcription output type - Allow users to output files other than      '.txt'. This allows users to use time stamps as part of their analysis
+- [ ] Alterable transcription output type - Allow users to output files other than '.txt'. This allows users to use time stamps as part of their analysis
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
-- [ ] Built-in plotting: Allow users to plot sentiment for each file transcribed.
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
-- [X] Docker support
+- [ ] Docker support
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Limitations
+
 This tool is far from perfect, here are some special considerations:
+
 - VADER is trained for social media text. Although a great general purpose tool, it may not capture the context of media that differ from this.
 - The default ML model is also trained from social media (twitter), same reason applies.
 - Accuracy of transcriptions: Even though Whisper is pretty good at transcribing, I have ran into issues that may alter the results of your analysis
 - Output only to CSV, I know many would like different file types
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 ## Results
-Coming soon! I can't wait to share some (unsurprising) results about news broadcasts!
 
+Currently processing large amounts of data on news broadcasts. Results coming soon.
 
 <!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!--
 ### Top contributors:
@@ -254,13 +254,12 @@ Don't forget to give the project a star! Thanks again!
 -->
 
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the AGPL-3.0 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTACT
 ## Contact
@@ -272,8 +271,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
  -->
 
-
-<!-- ACKNOWLEDGMENTS 
+<!-- ACKNOWLEDGMENTS
 ## Acknowledgments
 
 * []()
@@ -286,4 +284,3 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
