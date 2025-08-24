@@ -126,7 +126,7 @@ cd audisect
 python3 -m venv .venv
 source .venv/bin/activate
 sudo apt-get update && sudo apt-get install -y ffmpeg
-pip install --upgrade --index-url https://download.pytorch.org/whl/cu121 "torch>= 2.6"
+pip install --upgrade --index-url https://download.pytorch.org/whl/cu128 "torch>= 2.6"
 
 # Install Audisect
 pip install -e .
@@ -144,7 +144,7 @@ Coming soon. Previously had issues.
 
 Audisect is used through a CLI. The following are two supported methods for using audisect.
 
-### Transcription Model Sizes - Directly from OpenAI's Whisper
+### Transcription Model Sizes - Directly from OpenAI's Whisper Documentation
 
 There are six model sizes, four with English-only versions, offering speed and accuracy tradeoffs.
 Below are the names of the available models and their approximate memory requirements and inference speed relative to the large model.
@@ -227,6 +227,7 @@ The score for each is between -1 and 1. Any result between -0.05 and 0.05 is neu
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
 - [ ] Docker support
 - [ ] Ability to ignore specific files.
+- [ ] Verbose logging.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Limitations
