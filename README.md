@@ -111,41 +111,58 @@ This tool was birthed out of curiosity regarding national news sentiment. Initia
 
 ### Prerequisites
 
-- Ubuntu or WSL2
-- Python 3.12
+- Docker
 - Nvidia GPU
-- CUDA PyTorch >= 2.6 wheel
-- ffmpeg in PATH
+- Nvidia Container Toolkit
 
-### Installation
+> The image includes Python 3.12, ffmpeg, and a CUDA-enabled PyTorch at build time.  
+> Models (Whisper/HF) download on first run and are cached if you mount `/cache`.
 
-Clone: https://github.com/matteggers/audisect.git
+## Installation
+
+### Method 1: Docker _(Recommended)_
 
 ```sh
+git clone https://github.com/matteggers/audisect.git
 cd audisect
-python3 -m venv .venv
-source .venv/bin/activate
-sudo apt-get update && sudo apt-get install -y ffmpeg
-pip install --upgrade --index-url https://download.pytorch.org/whl/cu128 "torch>= 2.6"
-
-# Install Audisect
-pip install -e .
+docker build -t audisect:latest .
 ```
 
-#### Docker
-
-1. Clone: https://github.com/matteggers/audisect.git
-2. Run `docker build -t audisect:latest .` **Note:** This will take a while. Downloading and installing CUDA runtimes is bulky.
+**Note:** This will take a while. Downloading and installing CUDA runtimes is bulky.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 
+### Method 2: Pip
+
+#### Additional Pre-requisites:
+
+- Ubuntu or WSL2
+- Python 3.12
+- CUDA-enabled Pytorch ≥ 2.6
+- ffmpeg in PATH
+
+```sh
+git clone https://github.com/matteggers/audisect.git
+cd audisect
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+sudo apt-get update && sudo apt-get install -y ffmpeg
+
+# Pick the CUDA channel that matches your driver (examples: cu121 | cu124 | cu128)
+pip install --upgrade --index-url https://download.pytorch.org/whl/cu128 "torch>=2.6"
+
+pip install -e .
+```
+
 ## Usage
 
 Audisect is used through a CLI. The following are two supported methods for using audisect.
 
-### Transcription Model Sizes - Directly from OpenAI's Whisper Documentation
+### Transcription Model Sizes - Directly from [OpenAI's Whisper Documentation](https://github.com/openai/whisper)
 
 There are six model sizes, four with English-only versions, offering speed and accuracy tradeoffs.
 Below are the names of the available models and their approximate memory requirements and inference speed relative to the large model.
@@ -160,73 +177,35 @@ The relative speeds below are measured by transcribing English speech on a A100,
 | large  |   1550 M   |        N/A         |      `large`       |    ~10 GB     |       1x       |
 | turbo  |   809 M    |        N/A         |      `turbo`       |     ~6 GB     |      ~8x       |
 
-### Using custom Sentiment Analysis Models
+### Using custom sentiment analysis models
 
 1. Navigate to src/audisect/pipeline.py
 2. In init, change contents of string to desired HuggingFace model.
-
-### WSL
-
-- Using Windows path style
-
-```sh
-audisect run \
- -i "$(wslpath -a -u 'C:\Users\<YOU>\<INPUT FOLDER PATH>')" \
-  -o "$(wslpath -a -u 'C:\Users\<YOU>\<OUTPUT FOLDER PATH>')" \
- -s size
-```
-
-- Using WSL path style
-
-```sh
-audisect run \
-  -i "/mnt/c/Users/<YOU>/Downloads/input_test" \
-  -o "/mnt/c/Users/<YOU>/Downloads/output_test" \
-  -s size
-```
 
 ### Ubuntu
 
 ```sh
 audisect run \
-  -i "/home/<you>/input_test" \
-  -o "/home/<you>/output_test" \
+  -i "/INPUT/FOLDER/PATH" \
+  -o "/OUTPUT/FOLDER/PATH" \
   -s size
 ```
 
 ### Docker
 
-Run this first, once:
+Run this **first**, once (caches models):
 
 ```sh
 docker volume create audisect_cache
 ```
 
-#### in WSL
-
-Then run:
-
 ```sh
 docker run --rm --gpus all \
-  -v "/mnt/c/Users/<YOU>/<INPUT FOLDER PATH>:/data/in" \
-  -v "/mnt/c/Users/<YOU>/<OUTPUT FOLDER PATH>:/data/out" \
+  -v "/INPUT/FOLDER/PATH:/data/in:ro" \
+  -v "/OUTPUT/FOLDER/PATH:/data/out" \
+  -v "audisect_cache:/cache"
   audisect:latest run -i /data/in -o /data/out -s size
 ```
-
-#### in Ubuntu
-
-```sh
-docker run --rm --gpus all \
-  -v "/home/<you>/input:/data/in:ro" \
-  -v "/home/<you>/output:/data/out" \
-  audisect:latest run -i /data/in -o /data/out -s medium
-```
-
-#### in Windows Powershell
-
-docker run --rm --gpus all \
- -v "/mnt/c/Users/<YOU>/<FOLDER PATH>:/in:ro" \
- audisect:latest run -i /in -o /out -s medium
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -239,6 +218,11 @@ output/
 └─ txt/
    └─ example.txt
 ```
+
+### CSV Structure
+
+| sentence | model_neg | model_neu | model_pos | vader_neg | vader_neu | vader_pos | vader_compound |
+| -------- | --------- | --------- | --------- | --------- | --------- | --------- | -------------- |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -259,8 +243,8 @@ The score for each is between -1 and 1. Any result between -0.05 and 0.05 is neu
 
 - [ ] Alterable transcription output type - Allow users to output files other than '.txt'. This allows users to use time stamps as part of their analysis
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
-- [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
-- [ ] Docker support
+- [ ] Use SFT to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
+- [x] Docker support
 - [ ] Ability to ignore specific files.
 - [ ] Verbose logging.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
