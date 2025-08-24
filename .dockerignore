@@ -5,3 +5,6 @@ __pycache__/
 .venv/
 .env
 .git/
+.audisect.egg-info/
+.vscode/
+.images/
