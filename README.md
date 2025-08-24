@@ -134,7 +134,8 @@ pip install -e .
 
 #### Docker
 
-Coming soon. Previously had issues.
+1. Clone: https://github.com/matteggers/audisect.git
+2. Run `docker build -t audisect:latest .` **Note:** This will take a while. Downloading and installing CUDA runtimes is bulky.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -192,6 +193,40 @@ audisect run \
   -o "/home/<you>/output_test" \
   -s size
 ```
+
+### Docker
+
+Run this first, once:
+
+```sh
+docker volume create audisect_cache
+```
+
+#### in WSL
+
+Then run:
+
+```sh
+docker run --rm --gpus all \
+  -v "/mnt/c/Users/<YOU>/<INPUT FOLDER PATH>:/data/in" \
+  -v "/mnt/c/Users/<YOU>/<OUTPUT FOLDER PATH>:/data/out" \
+  audisect:latest run -i /data/in -o /data/out -s size
+```
+
+#### in Ubuntu
+
+```sh
+docker run --rm --gpus all \
+  -v "/home/<you>/input:/data/in:ro" \
+  -v "/home/<you>/output:/data/out" \
+  audisect:latest run -i /data/in -o /data/out -s medium
+```
+
+#### in Windows Powershell
+
+docker run --rm --gpus all \
+ -v "/mnt/c/Users/<YOU>/<FOLDER PATH>:/in:ro" \
+ audisect:latest run -i /in -o /out -s medium
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
