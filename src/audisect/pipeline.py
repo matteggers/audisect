@@ -5,6 +5,7 @@ from .audio_transcriber import AudioTranscriber
 from .sentiment_analyzer import SentimentAnalyzer
 from collections import deque
 import logging
+import pandas as pd
 
 
 # @FUTURE
@@ -76,7 +77,7 @@ class Pipeline:
                 "vader_compound": v["compound"],
             })
 
-        import pandas as pd
+        
         out_df = pd.DataFrame(rows)
         csv_path = self.handler.get_csv_path(file)
         out_df.to_csv(csv_path, index=False)
