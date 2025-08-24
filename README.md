@@ -226,6 +226,7 @@ The score for each is between -1 and 1. Any result between -0.05 and 0.05 is neu
 - [ ] Customizable sentence segmentation. Allow users to segment by paragraph instead of by sentence.
 - [ ] Use Supervised Fine Tuning (SVT) to improve an existing ML model, geared towards news transcriptions - News transcriptions were my main use case.
 - [ ] Docker support
+- [ ] Ability to ignore specific files.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Limitations
