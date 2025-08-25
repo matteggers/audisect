@@ -5,7 +5,6 @@ import nltk
 from nltk.tokenize import PunktSentenceTokenizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import torch.nn.functional as F
-from .dataframe_store import DataframeStore
 from .file import File
 
 nltk.download('vader_lexicon')
@@ -17,7 +16,7 @@ class CallableVader(SentimentIntensityAnalyzer):
 
 
 class SentimentAnalyzer:
-    def __init__(self, sentiment_model: str, df: DataframeStore):
+    def __init__(self, sentiment_model: str):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.sentiment_model = sentiment_model
         self.tokenizer = AutoTokenizer.from_pretrained(self.sentiment_model, use_fast=True)

@@ -23,8 +23,7 @@ class Pipeline:
     ):
         self.handler = FileHandler(input_directory=input_dir, output_directory=output_dir, allowed_extensions=[".mp3", ".wav", ".flac"])
         self.audio_transcriber = AudioTranscriber(model_size)
-        self.dataframe_store = DataframeStore(model, model_alias)
-        self.sentiment_analyzer = SentimentAnalyzer(model, self.dataframe_store) # This is custom, not SentimentIntensityAnalyzer from vader. FIXME make this more clear
+        self.sentiment_analyzer = SentimentAnalyzer(model)
 
         self.to_transcribe = deque()
         self.to_analyze = deque()
