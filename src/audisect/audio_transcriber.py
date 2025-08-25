@@ -16,11 +16,15 @@ class AudioTranscriber:
     def transcribe(self, file_obj: File) -> str:
         logger.info(f"Transcribing file: {file_obj.path.name}")
         result = self.model.transcribe(str(file_obj.path), fp16 = False)
-        logger.info(f"Transcription complete for {file_obj.path.name}")
-        file_obj.is_transcribed = True
-        file_obj.contents = result["text"]
-        return result["text"]
-    
+        if (result.type != dict):
+            logger.error(f"Transcription failed for {file_obj.path.name}")
+            return "" # TODO Better error handling
+        else:
+            logger.info(f"Successfully transcribed {file_obj.path.name}")
+            file_obj.is_transcribed = True
+            file_obj.contents = result["text"]
+            return result["text"]
+
         # TODO Save metadata into file object
         
         
