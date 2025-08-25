@@ -16,7 +16,7 @@ class AudioTranscriber:
     def transcribe(self, file_obj: File) -> str:
         logger.info(f"Transcribing file: {file_obj.path.name}")
         result = self.model.transcribe(str(file_obj.path), fp16 = False)
-        if (result.type != dict):
+        if (type(result) != dict):
             logger.error(f"Transcription failed for {file_obj.path.name}")
             return "" # TODO Better error handling
         else:
