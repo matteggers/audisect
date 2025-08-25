@@ -1,6 +1,5 @@
 from .file_handler import FileHandler
 from .file import File
-from .dataframe_store import DataframeStore
 from .audio_transcriber import AudioTranscriber
 from .sentiment_analyzer import SentimentAnalyzer
 from collections import deque
