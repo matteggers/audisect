@@ -8,10 +8,6 @@ import logging
 import pandas as pd
 
 
-# @FUTURE
-# Use threading to analyze more at once
-# NEED NVIDIA DEV CONTAINER
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
     
@@ -40,6 +36,7 @@ class Pipeline:
                 self.handler.set_output_paths(file_obj)
                 self.to_transcribe.append(file_obj)
                 self.to_analyze.append(file_obj)
+                logger.info(f"Enqueued {file}")
             else:
                 print(f"{file} already translated") # FIXME robust handling
     
@@ -61,7 +58,6 @@ class Pipeline:
         
         if self.handler.file_exists(file.path, ".csv"):
             return
-        logger.info(f"Analyzing {file.path.name}...")
 
         contents = self.handler.read_file(file)
         sentences = self.sentiment_analyzer.tokenize_to_sentences(contents)
@@ -81,6 +77,7 @@ class Pipeline:
         out_df = pd.DataFrame(rows)
         csv_path = self.handler.get_csv_path(file)
         out_df.to_csv(csv_path, index=False)
+        logger.info(f"Successfully analyzed {file.path.name}, results saved to {csv_path.name}")
         
     def analyze_all(self) -> None:
         while self.to_analyze:
