@@ -24,9 +24,6 @@ class Pipeline:
         self.audio_transcriber = AudioTranscriber(model_size)
         self.sentiment_analyzer = SentimentAnalyzer(model)
 
-        self.to_transcribe = deque()
-        self.to_analyze = deque()
-        
         self.queue_manager = QueueManager()
         
     def enqueue_all(self) -> None:
@@ -41,6 +38,7 @@ class Pipeline:
             else:
                 print(f"{file} already translated")
 
+    # FIXME Responsibility for analysis should be in sentiment analyzer
     def perform_analysis(self, file: File) -> None:
         
         if self.handler.file_exists(file.path, ".csv"):
@@ -67,7 +65,7 @@ class Pipeline:
         logger.info(f"Successfully analyzed {file.path.name}, results saved to {csv_path.name}")
         
     def transcribe_all(self) -> None:
-        while self.queue_manager.get_transcription_queue_size() > 0:
+        while not self.queue_manager.transcription_queue_is_empty():
             file_obj = self.queue_manager.dequeue_for_transcription()
 
             self.handler.write_file(
