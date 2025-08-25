@@ -80,5 +80,9 @@ class FileHandler:
             
         destination_path.write_text(text, encoding="utf-8")
         
+        
+        
+        # The file handler should create files, set paths, write and read files, and check for existence. It should not handle any processing logic. It should just be a utility class for file operations.       # The pipeline will handle the logic of what to do with the files, when to transcribe
+        # The pipeline will use the queue manager to manage the queues of files to be processed.
     
         
