@@ -50,3 +50,4 @@ class SentimentAnalyzer:
     def vader_sentiment_scores(self, sentence: str) -> dict:
         return self.vader_analyzer.polarity_scores(sentence)
     
+    
