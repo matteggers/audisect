@@ -6,6 +6,7 @@ from .sentiment_analyzer import SentimentAnalyzer
 from collections import deque
 import logging
 import pandas as pd
+from .queue_manager import QueueManager
 
 
 logger = logging.getLogger(__name__)
@@ -27,33 +28,21 @@ class Pipeline:
 
         self.to_transcribe = deque()
         self.to_analyze = deque()
-
-    def enqueue_transcription(self) -> None:
+        
+        self.queue_manager = QueueManager()
+        
+    def enqueue_all(self) -> None:
         files_to_translate = self.handler.locate_all_audio_files()
         for file in files_to_translate: # passing PATH but below is checking if file OBJECT
             if (not self.handler.file_exists(file, ".txt")):
                 file_obj = self.handler.create_object(file)
                 self.handler.set_output_paths(file_obj)
-                self.to_transcribe.append(file_obj)
-                self.to_analyze.append(file_obj)
+                self.queue_manager.enqueue_for_transcription(file_obj)
+                self.queue_manager.enqueue_for_analysis(file_obj)
                 logger.info(f"Enqueued {file}")
             else:
-                print(f"{file} already translated") # FIXME robust handling
-    
-    def transcribe_all(self) -> None:
-        while (self.to_transcribe):
-            file_obj = self.to_transcribe[0]
-            self.handler.write_file(
-                file=file_obj, 
-                text=self.audio_transcriber.transcribe(file_obj), 
-                suffix=".txt"
-                )
-            self.to_transcribe.popleft()
-            # TODO Error handling
-            
-            
-    # FIXME This is a bit messy, should be refactored AND passing the audio file instead of the txt right now. Update the attributes of file to have path to both
-    
+                print(f"{file} already translated")
+
     def perform_analysis(self, file: File) -> None:
         
         if self.handler.file_exists(file.path, ".csv"):
@@ -79,23 +68,31 @@ class Pipeline:
         out_df.to_csv(csv_path, index=False)
         logger.info(f"Successfully analyzed {file.path.name}, results saved to {csv_path.name}")
         
+    def transcribe_all(self) -> None:
+        while self.queue_manager.get_transcription_queue_size() > 0:
+            file_obj = self.queue_manager.dequeue_for_transcription()
+
+            self.handler.write_file(
+                file = file_obj,
+                text = self.audio_transcriber.transcribe(file_obj),
+                suffix = ".txt"
+            )
+            self.queue_manager.mark_transcription_success() 
+
     def analyze_all(self) -> None:
-        while self.to_analyze:
-            file_obj = self.to_analyze.popleft()
+        while not self.queue_manager.analysis_queue_is_empty():
+            file_obj = self.queue_manager.dequeue_for_analysis()
             self.perform_analysis(file_obj)
+            
         
     def run(self):
         logger.info("Pipeline starting...") 
         logger.info(f"Input directory: {self.handler.input_directory}, Output directory: {self.handler.output_directory}")
         logger.info(f"Transcription model size: {self.audio_transcriber.model_size}, Sentiment model: {self.sentiment_analyzer.sentiment_model}")
-        self.enqueue_transcription()
+        self.enqueue_all()
         self.transcribe_all()
         self.analyze_all()
         logger.info("Pipeline finished")
-        
-    
-    #@BUGFIX File is saving ONLY the first analysis to all the CSVs, need to reset the dataframe for each file
-        
         
             
     
