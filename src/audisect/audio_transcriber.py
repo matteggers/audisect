@@ -10,13 +10,12 @@ logging.basicConfig(level=logging.INFO)
 class AudioTranscriber:
     def __init__(self, model_size: str):
         self.model_size = model_size
-        # TODO Add cache dir - self.cache_dir = cache_dir
         self.model = whisper.load_model(model_size)
     
     def transcribe(self, file_obj: File) -> str:
         logger.info(f"Transcribing file: {file_obj.path.name}")
         result = self.model.transcribe(str(file_obj.path), fp16 = False)
-        if (type(result) != dict):
+        if not isinstance(result, dict):
             logger.error(f"Transcription failed for {file_obj.path.name}")
             return "" # TODO Better error handling
         else:
