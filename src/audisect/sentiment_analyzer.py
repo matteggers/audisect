@@ -43,7 +43,19 @@ class SentimentAnalyzer:
             probs = F.softmax(output.logits, dim = -1).squeeze(0)
             probs = probs.cpu().tolist()
         
-        return probs
+        weighted_avg = self.weighted_average(probs)
+        probs.append(weighted_avg)
+        total_scores = probs
+        
+        return total_scores
     
     def vader_sentiment_scores(self, sentence: str) -> dict:
         return self.vader_analyzer.polarity_scores(sentence)
+    
+    def weighted_average(self, probs: dict,) -> dict:
+        pos_coef = 1
+        neu_coef = 0
+        neg_coef = -1
+        weighted_avg = probs[0] * neg_coef + probs[1] * neu_coef + probs[2] * pos_coef
+        
+        return weighted_avg

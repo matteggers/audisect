@@ -58,7 +58,7 @@ class Pipeline:
             v = self.sentiment_analyzer.vader_sentiment_scores(s)
             rows.append({
                 "sentence": s,
-                "model_neg": m[0], "model_neu": m[1], "model_pos": m[2],
+                "model_neg": m[0], "model_neu": m[1], "model_pos": m[2], "model_weighted_avg": m[3],
                 "vader_neg": v["neg"], "vader_neu": v["neu"], "vader_pos": v["pos"],
                 "vader_compound": v["compound"],
             })
