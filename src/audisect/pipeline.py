@@ -28,17 +28,22 @@ class Pipeline:
         
     def enqueue_all(self) -> None:
         files_to_translate = self.handler.locate_all_audio_files()
-        for file in files_to_translate: # passing PATH but below is checking if file OBJECT
-            if (not self.handler.file_exists(file, ".txt")):
-                file_obj = self.handler.create_object(file)
-                self.handler.set_output_paths(file_obj)
-                self.queue_manager.enqueue_for_transcription(file_obj)
-                self.queue_manager.enqueue_for_analysis(file_obj)
-                logger.info(f"Enqueued {file}")
-            else:
-                print(f"{file} already translated")
+        for file in files_to_translate:
+            file_obj = self.handler.create_object(file)
+            self.handler.set_output_paths(file_obj)
 
-    # FIXME Responsibility for analysis should be in sentiment analyzer
+            if not self.handler.file_exists(file, ".txt"):
+                self.queue_manager.enqueue_for_transcription(file_obj)
+                logger.info(f"Enqueued {file} for transcription")
+            else:
+                logger.info(f"{file} already transcribed, skipping transcription")
+
+            if not self.handler.file_exists(file, ".csv"):
+                self.queue_manager.enqueue_for_analysis(file_obj)
+                logger.info(f"Enqueued {file} for analysis")
+            else:
+                logger.info(f"{file} already analyzed, skipping analysis")
+
     def perform_analysis(self, file: File) -> None:
         
         if self.handler.file_exists(file.path, ".csv"):
