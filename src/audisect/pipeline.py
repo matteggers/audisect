@@ -6,7 +6,7 @@ from collections import deque
 import logging
 import pandas as pd
 from .queue_manager import QueueManager
-
+from .file_locator import FileLocator
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -20,14 +20,15 @@ class Pipeline:
         model: str = "cardiffnlp/twitter-roberta-base-sentiment",
         model_alias: str = "",
     ):
-        self.handler = FileHandler(input_directory=input_dir, output_directory=output_dir, allowed_extensions=[".mp3", ".wav", ".flac"])
+        self.handler = FileHandler(input_directory=input_dir, output_directory=output_dir)
+        self.locator = FileLocator(input_directory=input_dir, output_directory=output_dir, allowed_extensions=[".mp3", ".wav", ".flac"])
         self.audio_transcriber = AudioTranscriber(model_size)
         self.sentiment_analyzer = SentimentAnalyzer(model)
 
         self.queue_manager = QueueManager()
         
     def enqueue_all(self) -> None:
-        files_to_translate = self.handler.locate_all_audio_files()
+        files_to_translate = self.locator.locate_all_audio_files()
         for file in files_to_translate:
             file_obj = self.handler.create_object(file)
             self.handler.set_output_paths(file_obj)

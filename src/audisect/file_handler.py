@@ -3,20 +3,14 @@ from glob import glob
 from .file import File
 import logging
 
-# Handles the creation of file objects
 
-# Note:
-# File Handler performs the following:
-# Initializes itself and locates all audio files in the input directory
-# 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 class FileHandler:
-    def __init__(self, input_directory: Path, output_directory: Path, allowed_extensions: dict) -> Path:
+    def __init__(self, input_directory: Path, output_directory: Path) -> Path:
         self.input_directory = Path(input_directory)
         self.output_directory = Path(output_directory)
-        self.extensions = allowed_extensions or {".wav", ".mp3", ".m4a", ".mp4"}
         
         self.output_directory.mkdir(parents = True, exist_ok=True)
         
@@ -26,13 +20,7 @@ class FileHandler:
         self.txt_directory = self.output_directory / "txt"
         self.txt_directory.mkdir(parents = True, exist_ok=True)
         
-    def locate_all_audio_files(self) -> list[Path]:
-        files = []
-        for file in self.input_directory.glob("*"):
-            if file.suffix.lower() in self.extensions:
-                files.append(file)
-                logger.info(f"Located audio file: {file.name}")
-        return files
+
     
     def create_object(self, file: Path) -> File:
         return File(file)
