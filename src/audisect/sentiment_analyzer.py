@@ -30,7 +30,6 @@ class SentimentAnalyzer:
     def tokenize_to_sentences(self, contents: str):
         return PunktSentenceTokenizer().tokenize(contents)
 
-    # FIXME Change this name to reflect the custom model
     def model_sentiment_scores(self, sentence: str) -> dict:
         encoded = self.tokenizer(
             sentence,
@@ -44,7 +43,7 @@ class SentimentAnalyzer:
             probs = F.softmax(output.logits, dim = -1).squeeze(0)
             probs = probs.cpu().tolist()
         
-        return probs # FIXME outputting tensors not normal numbers
+        return probs
     
     def vader_sentiment_scores(self, sentence: str) -> dict:
         return self.vader_analyzer.polarity_scores(sentence)
