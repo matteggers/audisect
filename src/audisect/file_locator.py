@@ -12,3 +12,9 @@ class FileLocator:
             if file.suffix.lower() in self.extensions:
                 files.append(file)
         return files
+    
+    def locate_all_csv_files(self) -> list[Path]:
+        csv_dir = self.output_directory / "csv"
+        if not csv_dir.exists():
+            return []
+        return list(csv_dir.glob("*.csv"))

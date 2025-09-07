@@ -7,6 +7,7 @@ import logging
 import pandas as pd
 from .queue_manager import QueueManager
 from .file_locator import FileLocator
+from .stats_manager import StatsManager
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -24,14 +25,18 @@ class Pipeline:
         self.locator = FileLocator(input_directory=input_dir, output_directory=output_dir, allowed_extensions=[".mp3", ".wav", ".flac"])
         self.audio_transcriber = AudioTranscriber(model_size)
         self.sentiment_analyzer = SentimentAnalyzer(model)
+        self.stats_manager = StatsManager(output_dir=output_dir)
 
         self.queue_manager = QueueManager()
+        self.files = []
         
     def enqueue_all(self) -> None:
+        self.files.clear()
         files_to_translate = self.locator.locate_all_audio_files()
         for file in files_to_translate:
             file_obj = self.handler.create_object(file)
             self.handler.set_output_paths(file_obj)
+            self.files.append(file_obj)
 
             if not self.handler.file_exists(file, ".txt"):
                 self.queue_manager.enqueue_for_transcription(file_obj)
@@ -44,6 +49,18 @@ class Pipeline:
                 logger.info(f"Enqueued {file} for analysis")
             else:
                 logger.info(f"{file} already analyzed, skipping analysis")
+    
+    def enqueue_post_analysis(self) -> None:
+        for file_obj in self.files:
+            self.queue_manager.enqueue_for_post_analysis(file_obj)
+            logger.info(f"Enqueued {file_obj.path.name} for post-analysis")
+ 
+    def post_analyze_all(self) -> None:
+        while not self.queue_manager.post_analysis_queue_is_empty():
+            file_obj = self.queue_manager.dequeue_for_post_analysis()
+            df = pd.read_csv(self.handler.get_csv_path(file_obj))
+            self.stats_manager.compute_and_store_stats(df, file_obj.path.stem)
+            logger.info(f"Post-analyzing {file_obj.path.name}")
 
     def perform_analysis(self, file: File) -> None:
         
@@ -94,7 +111,6 @@ class Pipeline:
         self.enqueue_all()
         self.transcribe_all()
         self.analyze_all()
+        self.enqueue_post_analysis()
+        self.post_analyze_all()
         logger.info("Pipeline finished")
-        
-            
-    
