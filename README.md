@@ -107,7 +107,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 
 ### Purpose
 
-This tool was birthed out of curiosity regarding national news sentiment. Initially, this was supposed to find the most used word in a collection of NBC news broadcasts after I heard "chilling details" multiple days in a row. My family frequently watches cable news -\_-. I pivoted into finding sentiment as that would provide more insight into how this form of media may affect a person's emotional state.
+This tool was born out of curiosity regarding national news sentiment. Initially, this was supposed to find the most used word in a collection of NBC news broadcasts after I heard "chilling details" multiple days in a row. My family frequently watches cable news -\_-. I pivoted into finding sentiment as that would provide more insight into how this form of media may affect a person's emotional state.
 
 ### Prerequisites
 
@@ -221,8 +221,8 @@ output/
 
 ### CSV Structure
 
-| sentence | model_neg | model_neu | model_pos | vader_neg | vader_neu | vader_pos | vader_compound |
-| -------- | --------- | --------- | --------- | --------- | --------- | --------- | -------------- |
+| sentence | model_neg | model_neu | model_pos | model_weighted_avg | vader_neg | vader_neu | vader_pos | vader_compound |
+| -------- | --------- | --------- | --------- | ------------------ | --------- | --------- | --------- | -------------- |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
